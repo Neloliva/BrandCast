@@ -23,6 +23,9 @@ export default function BrandEditor({
   const [banned, setBanned] = useState(initial.vocabulary.banned.join(", "));
   const [emojiPolicy, setEmojiPolicy] = useState(initial.emojiPolicy);
   const [linkPolicy, setLinkPolicy] = useState(initial.linkPolicy);
+  const [phone, setPhone] = useState(initial.contact?.phone ?? "");
+  const [website, setWebsite] = useState(initial.contact?.website ?? "");
+  const [email, setEmail] = useState(initial.contact?.email ?? "");
   const [goodExamples, setGoodExamples] = useState(
     JSON.stringify(initial.voiceExamples.good, null, 2),
   );
@@ -59,6 +62,11 @@ export default function BrandEditor({
           },
           emojiPolicy,
           linkPolicy,
+          contact: {
+            ...(phone.trim() ? { phone: phone.trim() } : {}),
+            ...(website.trim() ? { website: website.trim() } : {}),
+            ...(email.trim() ? { email: email.trim() } : {}),
+          },
           voiceExamples: { good: goodParsed, bad: badParsed },
         });
         setSavedAt(new Date().toLocaleTimeString());
@@ -123,6 +131,42 @@ export default function BrandEditor({
           />
         </Field>
       </div>
+
+      <fieldset className="rounded-md border border-border p-4">
+        <legend className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Contact details
+        </legend>
+        <p className="-mt-1 mb-3 text-xs text-muted-foreground">
+          Used in CTAs when natural — respects each platform&apos;s link policy.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Phone">
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="1300 115 296"
+              className="input"
+            />
+          </Field>
+          <Field label="Website">
+            <input
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="https://example.com"
+              className="input"
+            />
+          </Field>
+          <Field label="Email">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="hello@example.com"
+              className="input"
+            />
+          </Field>
+        </div>
+      </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Emoji policy">

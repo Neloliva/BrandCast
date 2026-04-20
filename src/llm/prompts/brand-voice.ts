@@ -37,6 +37,15 @@ export function brandVoiceSection(profile: BrandProfile): string {
   lines.push(`\n**Emoji policy:** ${profile.emojiPolicy}`);
   lines.push(`**Link policy:** ${profile.linkPolicy}`);
 
+  const contactBits: string[] = [];
+  if (profile.contact?.phone) contactBits.push(`Phone: ${profile.contact.phone}`);
+  if (profile.contact?.website) contactBits.push(`Website: ${profile.contact.website}`);
+  if (profile.contact?.email) contactBits.push(`Email: ${profile.contact.email}`);
+  if (contactBits.length) {
+    lines.push("\n**Contact details (use in CTAs when natural, respect each platform's link policy):**");
+    for (const c of contactBits) lines.push(`- ${c}`);
+  }
+
   if (profile.voiceExamples.good.length) {
     lines.push("\n**Examples that sound like us:**");
     for (const ex of profile.voiceExamples.good) {

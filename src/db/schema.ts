@@ -113,6 +113,10 @@ export const brandProfiles = pgTable(
       .$type<{ preferred: string[]; banned: string[] }>()
       .notNull()
       .default(sql`'{"preferred":[],"banned":[]}'::jsonb`),
+    contact: jsonb("contact")
+      .$type<{ phone?: string; website?: string; email?: string }>()
+      .notNull()
+      .default(sql`'{}'::jsonb`),
     emojiPolicy: emojiPolicyEnum("emoji_policy").notNull().default("sparing"),
     linkPolicy: linkPolicyEnum("link_policy").notNull().default("inline"),
     createdAt: timestamp("created_at", { withTimezone: true })
