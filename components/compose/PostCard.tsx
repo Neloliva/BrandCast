@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Loader2 } from "lucide-react";
+import { Copy, Check, Loader2, AlertCircle } from "lucide-react";
 import type { PlatformSpec } from "@/src/platforms/registry";
 import type { PostState } from "./ComposeRoot";
 
@@ -36,6 +36,9 @@ export default function PostCard({
           {state.status === "done" && (
             <Check size={14} className="text-green-600" />
           )}
+          {state.status === "error" && (
+            <AlertCircle size={14} className="text-destructive" />
+          )}
         </div>
         <div className="flex items-center gap-3 text-xs">
           <span
@@ -63,6 +66,16 @@ export default function PostCard({
         {!post && state.status === "idle" && (
           <p className="text-sm italic text-muted-foreground">
             Waiting to generate…
+          </p>
+        )}
+        {!post && state.status === "streaming" && (
+          <p className="text-sm italic text-muted-foreground">
+            Generating…
+          </p>
+        )}
+        {state.status === "error" && (
+          <p className="text-sm text-destructive">
+            {state.error ?? "Generation failed."}
           </p>
         )}
         {post && (

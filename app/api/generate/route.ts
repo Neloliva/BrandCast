@@ -86,26 +86,33 @@ export async function POST(request: NextRequest) {
       await Promise.all(
         body.platforms.map(async (platformId) => {
           const platform = getPlatform(platformId);
-          const { partialObjectStream, object } = streamPostForPlatform({
-            source,
-            brandProfile: profile,
-            platform,
-          });
-
           send({ type: "post.started", platform: platformId });
 
-          for await (const partial of partialObjectStream) {
-            send({ type: "post.delta", platform: platformId, partial });
+          try {
+            const { partialObjectStream, object } = streamPostForPlatform({
+              source,
+              brandProfile: profile,
+              platform,
+            });
+
+            for await (const partial of partialObjectStream) {
+              send({ type: "post.delta", platform: platformId, partial });
+            }
+
+            const finalObj = await object;
+            await db.insert(posts).values({
+              generationId,
+              platform: platformId,
+              content: finalObj,
+            });
+
+            send({ type: "post.completed", platform: platformId, post: finalObj });
+          } catch (err) {
+            const message =
+              err instanceof Error ? err.message : "Generation failed";
+            console.error(`[generate] ${platformId} failed:`, err);
+            send({ type: "post.error", platform: platformId, error: message });
           }
-
-          const finalObj = await object;
-          await db.insert(posts).values({
-            generationId,
-            platform: platformId,
-            content: finalObj,
-          });
-
-          send({ type: "post.completed", platform: platformId, post: finalObj });
         }),
       );
 

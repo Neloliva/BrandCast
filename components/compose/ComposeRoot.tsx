@@ -98,6 +98,7 @@ export default function ComposeRoot({ clients }: { clients: Client[] }) {
           platform?: PlatformId;
           partial?: Partial<PostOutput>;
           post?: PostOutput;
+          error?: string;
         };
         try {
           evt = JSON.parse(line);
@@ -113,10 +114,29 @@ export default function ComposeRoot({ clients }: { clients: Client[] }) {
           });
         } else if (evt.type === "post.completed" && evt.platform && evt.post) {
           updatePost(evt.platform, { status: "done", final: evt.post });
+        } else if (evt.type === "post.error" && evt.platform) {
+          updatePost(evt.platform, {
+            status: "error",
+            error: evt.error ?? "Generation failed",
+          });
         }
       }
     }
 
+    setPostsByPlatform((prev) => {
+      const next = { ...prev };
+      for (const p of platforms) {
+        const s = next[p];
+        if (s && s.status === "streaming") {
+          next[p] = {
+            ...s,
+            status: "error",
+            error: s.error ?? "Stream ended before completion",
+          };
+        }
+      }
+      return next;
+    });
     setIsGenerating(false);
   }
 
