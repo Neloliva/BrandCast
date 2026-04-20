@@ -1,0 +1,1 @@
+ALTER TABLE "brand_profiles" ADD COLUMN "contact" jsonb DEFAULT '{}'::jsonb NOT NULL;
