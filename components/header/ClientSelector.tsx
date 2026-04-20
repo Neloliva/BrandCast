@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
@@ -34,12 +35,12 @@ export default function ClientSelector({ clients }: { clients: Client[] }) {
 
   if (!clients.length) {
     return (
-      <a
+      <Link
         href="/clients/new"
         className="text-sm text-muted-foreground underline hover:text-foreground"
       >
         + Add a client
-      </a>
+      </Link>
     );
   }
 
