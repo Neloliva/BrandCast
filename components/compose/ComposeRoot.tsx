@@ -4,8 +4,10 @@ import { useState } from "react";
 import InputPanel from "./InputPanel";
 import PreviewPanel from "./PreviewPanel";
 import PlatformPicker from "./PlatformPicker";
+import ModelPicker from "./ModelPicker";
 import { type PlatformId } from "@/src/platforms/registry";
 import type { PostOutput } from "@/src/llm/schemas";
+import { DEFAULT_MODEL_ID } from "@/src/llm/models";
 
 type Client = { id: string; name: string };
 
@@ -28,6 +30,7 @@ export default function ComposeRoot({ clients }: { clients: Client[] }) {
     "linkedin",
     "twitter",
   ]);
+  const [model, setModel] = useState<string>(DEFAULT_MODEL_ID);
   const [postsByPlatform, setPostsByPlatform] = useState<
     Record<PlatformId, PostState>
   >({} as Record<PlatformId, PostState>);
@@ -64,11 +67,12 @@ export default function ComposeRoot({ clients }: { clients: Client[] }) {
       body = JSON.stringify({
         clientId,
         platforms,
+        model,
         source: { kind: "text", title: extracted.title, text: extracted.bodyMd },
       });
       headers = { "Content-Type": "application/json" };
     } else {
-      body = JSON.stringify({ clientId, platforms, source });
+      body = JSON.stringify({ clientId, platforms, model, source });
       headers = { "Content-Type": "application/json" };
     }
 
@@ -168,6 +172,8 @@ export default function ComposeRoot({ clients }: { clients: Client[] }) {
         </div>
 
         <InputPanel value={source} onChange={setSource} />
+
+        <ModelPicker value={model} onChange={setModel} />
 
         <PlatformPicker value={platforms} onChange={setPlatforms} />
 

@@ -15,6 +15,7 @@ type Body = {
   clientId: string;
   source: IngestInput;
   platforms: PlatformId[];
+  model?: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -93,6 +94,7 @@ export async function POST(request: NextRequest) {
               source,
               brandProfile: profile,
               platform,
+              modelId: body.model,
             });
 
             for await (const partial of partialObjectStream) {

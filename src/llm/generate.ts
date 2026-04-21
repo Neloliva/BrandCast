@@ -1,5 +1,5 @@
 import { streamObject } from "ai";
-import { defaultModel } from "./client";
+import { modelFor } from "./client";
 import { PostOutputSchema, type PostOutput } from "./schemas";
 import { brandVoiceSection } from "./prompts/brand-voice";
 import { platformSection, type PlatformSpec } from "@/src/platforms/registry";
@@ -12,12 +12,14 @@ type StreamArgs = {
   source: ExtractedContent;
   brandProfile: BrandProfile;
   platform: PlatformSpec;
+  modelId?: string;
 };
 
 export function streamPostForPlatform({
   source,
   brandProfile,
   platform,
+  modelId,
 }: StreamArgs) {
   const system = [
     "You are a senior social copywriter adapting source content into a single on-brand post.",
@@ -44,7 +46,7 @@ export function streamPostForPlatform({
     .join("\n");
 
   return streamObject<PostOutput>({
-    model: defaultModel(),
+    model: modelFor(modelId),
     schema: PostOutputSchema,
     system,
     prompt,
